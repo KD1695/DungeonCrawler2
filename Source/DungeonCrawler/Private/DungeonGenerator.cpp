@@ -33,7 +33,7 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 {
 	auto gateArray = startRoom->GetComponentsByClass(UChildActorComponent::StaticClass());
 	auto params = FActorSpawnParameters();
-	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::DontSpawnIfColliding;
+	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	for(int i=0; i<gateArray.Num(); i++)
 	{
@@ -93,6 +93,9 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 	}
 
 	if(roomsToGenerate.Num() > 0)
+	{
+		Algo::RandomShuffle(roomsToGenerate);
 		GenerateDungeon(roomsToGenerate.Pop(true));
+	}
 }
 

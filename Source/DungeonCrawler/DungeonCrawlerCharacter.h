@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Interactable.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "DungeonCrawlerCharacter.generated.h"
 
@@ -22,6 +24,10 @@ class ADungeonCrawlerCharacter : public ACharacter
 	/** Camera boom positioning the minimap camera above the character */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class USpringArmComponent* MiniMapCameraBoom;
+
+	UPROPERTY(EditAnywhere, Category="Interaction", meta=( AllowPrivateAccess = "true"))
+	USphereComponent* interactionSphere;
+	
 public:
 	ADungeonCrawlerCharacter();
 
@@ -48,6 +54,8 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
+	void Interact();
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);

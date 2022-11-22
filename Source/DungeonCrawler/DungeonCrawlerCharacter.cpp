@@ -54,6 +54,12 @@ ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 	MiniMapCameraBoom->TargetArmLength = 1000.0f; // The camera follows at this distance behind the character	
 	MiniMapCameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
 
+	//Interaction Sphere setup
+	interactionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionSphere"));
+	interactionSphere->SetupAttachment(RootComponent);
+	interactionSphere->SetSphereRadius(0, false);
+	interactionSphere->SetActive(false);
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -67,6 +73,8 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	check(PlayerInputComponent);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ADungeonCrawlerCharacter::Interact);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ADungeonCrawlerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ADungeonCrawlerCharacter::MoveRight);
@@ -104,6 +112,18 @@ void ADungeonCrawlerCharacter::LookUpAtRate(float Rate)
 {
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
+}
+
+void ADungeonCrawlerCharacter::Interact()
+{
+	interactionSphere->SetActive(true);
+	interactionSphere->SetSphereRadius(30, true);
+	TArray<AActor*> interactablesInRange;
+	interactionSphere->GetOverlappingActors(interactablesInRange, AInteractable::StaticClass());
+	for(int i=0; i<interactablesInRange.Num(); i++)
+	{
+		Cast<AInteractable>(interactablesInRange[i])->Interact();
+	}
 }
 
 void ADungeonCrawlerCharacter::MoveForward(float Value)

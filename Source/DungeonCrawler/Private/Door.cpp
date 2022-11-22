@@ -8,6 +8,7 @@ ADoor::ADoor()
 	doorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("doorMesh"));
 	wallMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("wallMesh"));
 	wallMesh->SetVisibility(false);
+	wallMesh->AttachToComponent(doorMesh, FAttachmentTransformRules::KeepRelativeTransform);
 	box = CreateDefaultSubobject<UBoxComponent>(TEXT("box"));
 	box->AttachToComponent(doorMesh, FAttachmentTransformRules::KeepRelativeTransform);
 	box->SetRelativeLocation(FVector(0, -45, 100));
@@ -17,7 +18,12 @@ ADoor::ADoor()
 void ADoor::Interact()
 {
 	Super::Interact();
-	
+	if(doorMesh->IsVisible())
+	{
+		int offset = isOpen ? -200 : 200;
+		doorMesh->MoveComponent(FVector(0,0,offset), doorMesh->GetComponentRotation(), false);
+		isOpen = !isOpen;
+	}
 }
 
 void ADoor::SetWall(bool wallState)

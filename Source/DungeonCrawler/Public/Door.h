@@ -27,6 +27,7 @@ class DUNGEONCRAWLER_API ADoor : public AInteractable
 public:
 	UPROPERTY(EditAnywhere, Category="Gate Setting", DisplayName="Set Entrance")
 	bool isEntrance = false;
+	bool isOpen = false;
 	ADoor();
 	virtual void Interact() override;
 	void SetWall(bool wallState);
