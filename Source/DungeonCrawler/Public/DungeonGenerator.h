@@ -23,6 +23,10 @@ class DUNGEONCRAWLER_API ADungeonGenerator : public AActor
 
 	UPROPERTY(EditAnywhere, Category="Base Rooms", DisplayName="Start Room")
 	ARoomBase* start_room;
+
+	UPROPERTY(EditAnywhere, Category="Generation Settings", DisplayName="Limiter Value")
+	int roomLimiter;
+	int currentLimiterValue = 0;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -31,9 +35,10 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	
+	void GenerateDungeon(ARoomBase* startRoom);
 };

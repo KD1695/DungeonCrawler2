@@ -19,10 +19,16 @@ class DUNGEONCRAWLER_API ADoor : public AInteractable
 	UStaticMeshComponent* doorMesh;
 	
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
+	UStaticMeshComponent* wallMesh;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess="true"))
 	UBoxComponent* box;
 
 public:
+	UPROPERTY(EditAnywhere, Category="Gate Setting", DisplayName="Set Entrance")
+	bool isEntrance = false;
 	ADoor();
 	virtual void Interact() override;
+	void SetWall(bool wallState);
 	UStaticMeshComponent* GetDoorMeshComponent();
 };
