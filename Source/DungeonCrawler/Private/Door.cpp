@@ -23,7 +23,7 @@ void ADoor::Interact()
 void ADoor::SetWall(bool wallState)
 {
 	wallMesh->SetVisibility(wallState, false);
-	//doorMesh->SetVisibility(!wallState, false);
+	doorMesh->SetVisibility(!wallState, false);
 }
 
 UStaticMeshComponent* ADoor::GetDoorMeshComponent()

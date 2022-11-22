@@ -27,6 +27,7 @@ class DUNGEONCRAWLER_API ADungeonGenerator : public AActor
 	UPROPERTY(EditAnywhere, Category="Generation Settings", DisplayName="Limiter Value")
 	int roomLimiter;
 	int currentLimiterValue = 0;
+	TArray<ARoomBase*> roomsToGenerate;
 	
 public:	
 	// Sets default values for this actor's properties
