@@ -18,6 +18,10 @@ class ADungeonCrawlerCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	/** Camera boom positioning the minimap camera above the character */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class USpringArmComponent* MiniMapCameraBoom;
 public:
 	ADungeonCrawlerCharacter();
 

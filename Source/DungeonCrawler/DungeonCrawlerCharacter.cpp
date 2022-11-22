@@ -4,6 +4,7 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -46,6 +47,12 @@ ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+	// Create a minimap camera boom (pulls in towards the player if there is a collision)
+	MiniMapCameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("MiniMapCameraBoom"));
+	MiniMapCameraBoom->SetupAttachment(RootComponent);
+	MiniMapCameraBoom->TargetArmLength = 1000.0f; // The camera follows at this distance behind the character	
+	MiniMapCameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
