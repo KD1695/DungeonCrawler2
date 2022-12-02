@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "DungeonCrawlerCharacter.h"
+
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -8,9 +9,23 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 //////////////////////////////////////////////////////////////////////////
 // ADungeonCrawlerCharacter
+
+UClass* ADungeonCrawlerCharacter::GetWeaponClass() const
+{
+	return WeaponClass;
+}
+
+void ADungeonCrawlerCharacter::SetWeaponClass(UClass* weaponClass)
+{
+	WeaponChild->SetChildActorClass(weaponClass);
+	Weapon = Cast<AWeapon>(WeaponChild->GetChildActor());
+	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("sword_r_socket"));
+	WeaponClass = weaponClass;
+}
 
 ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 {
@@ -60,6 +75,11 @@ ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 	interactionSphere->SetSphereRadius(0, false);
 	interactionSphere->SetActive(false);
 
+	//Attack
+	isReadyToAttack = true;
+	isAttacking = false;
+	WeaponChild = CreateDefaultSubobject<UChildActorComponent>(TEXT("Weapon"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -75,6 +95,9 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ADungeonCrawlerCharacter::Interact);
+	
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ADungeonCrawlerCharacter::AttackStart);
+	PlayerInputComponent->BindAction("Attack", IE_Released, this, &ADungeonCrawlerCharacter::AttackStop);
 
 	PlayerInputComponent->BindAxis("Move Forward / Backward", this, &ADungeonCrawlerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("Move Right / Left", this, &ADungeonCrawlerCharacter::MoveRight);
@@ -114,6 +137,12 @@ void ADungeonCrawlerCharacter::LookUpAtRate(float Rate)
 	AddControllerPitchInput(Rate * TurnRateGamepad * GetWorld()->GetDeltaSeconds());
 }
 
+void ADungeonCrawlerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	SetWeaponClass(WeaponClass);
+}
+
 void ADungeonCrawlerCharacter::Interact()
 {
 	interactionSphere->SetActive(true);
@@ -124,6 +153,21 @@ void ADungeonCrawlerCharacter::Interact()
 	{
 		Cast<AInteractable>(interactablesInRange[i])->Interact();
 	}
+}
+
+void ADungeonCrawlerCharacter::AttackStart()
+{
+	if(isReadyToAttack)
+	{
+		isAttacking = true;
+		isReadyToAttack = false;
+	}
+}
+
+void ADungeonCrawlerCharacter::AttackStop()
+{
+	isAttacking = false;
+	isReadyToAttack = true;
 }
 
 void ADungeonCrawlerCharacter::MoveForward(float Value)

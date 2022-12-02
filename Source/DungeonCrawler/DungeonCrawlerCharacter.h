@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Interactable.h"
+#include "Weapon.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/Character.h"
 #include "DungeonCrawlerCharacter.generated.h"
@@ -27,9 +28,25 @@ class ADungeonCrawlerCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, Category="Interaction", meta=( AllowPrivateAccess = "true"))
 	USphereComponent* interactionSphere;
+
+	UPROPERTY(BlueprintReadOnly, Category="Attack", meta=(AllowPrivateAccess = "true"))
+	bool isReadyToAttack;
+
+	UPROPERTY(BlueprintReadOnly, Category="Attack", meta=(AllowPrivateAccess = "true"))
+	bool isAttacking;
+
+	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowPrivateAccess = "true"))
+	UChildActorComponent* WeaponChild;
 	
+	UPROPERTY(VisibleAnywhere, Category="Attack", meta=(AllowPrivateAccess = "true"))
+	AWeapon* Weapon;
+
+	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowPrivateAccess = "true"))
+	UClass* WeaponClass;
 public:
 	ADungeonCrawlerCharacter();
+	UClass* GetWeaponClass() const;
+	void SetWeaponClass(UClass* weaponClass);
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Input)
@@ -55,7 +72,12 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	virtual void BeginPlay() override;
+
 	void Interact();
+
+	void AttackStart();
+	void AttackStop();
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
