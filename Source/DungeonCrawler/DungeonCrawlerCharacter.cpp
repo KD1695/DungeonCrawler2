@@ -140,9 +140,10 @@ void ADungeonCrawlerCharacter::LookUpAtRate(float Rate)
 void ADungeonCrawlerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if(this->GetController()->IsLocalPlayerController() && WeaponClass)
+	if(this->GetController())
 	{
-		SetWeaponClass(WeaponClass);
+		if(this->GetController()->IsLocalPlayerController() && WeaponClass)
+			SetWeaponClass(WeaponClass);
 	}
 }
 
