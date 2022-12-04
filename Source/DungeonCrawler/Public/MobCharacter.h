@@ -13,5 +13,12 @@ UCLASS()
 class DUNGEONCRAWLER_API AMobCharacter : public ADungeonCrawlerCharacter
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(AllowPrivateAccess = "true"))
+	bool IsDisabled = false;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	void SetDisableState(bool _IsDisabled);
+	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

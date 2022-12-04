@@ -3,3 +3,7 @@
 
 #include "MobCharacter.h"
 
+void AMobCharacter::SetDisableState(bool _IsDisabled)
+{
+	IsDisabled = _IsDisabled;
+}
