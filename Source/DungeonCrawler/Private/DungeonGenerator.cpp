@@ -31,20 +31,23 @@ void ADungeonGenerator::Tick(float DeltaTime)
 
 void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 {
-	auto gateArray = startRoom->GetComponentsByClass(UChildActorComponent::StaticClass());
+	TArray<AActor*> childActors;
+	startRoom->GetAllChildActors(childActors, true);
 	auto params = FActorSpawnParameters();
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	for(int i=0; i<gateArray.Num(); i++)
+	for(int i=0; i<childActors.Num(); i++)
 	{
-		auto gate1 = Cast<UChildActorComponent>(gateArray[i]);
-		auto actorObj = Cast<ADoor>(gate1->GetChildActor());
-		if(!actorObj->isEntrance)
+		auto doorObj = Cast<ADoor>(childActors[i]);
+		if(!doorObj)
+			continue;
+		
+		if(!doorObj->isEntrance)
 		{
 			if(currentLimiterValue < roomLimiter)
 			{
 				Algo::RandomShuffle(single_out_rooms);
-				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(single_out_rooms[0], gate1->GetComponentLocation(), gate1->GetComponentRotation(), params);
+				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(single_out_rooms[0], doorObj->GetActorLocation(), doorObj->GetActorRotation(), params);
 				if(nextRoom)
 				{
 					//Generate Content
@@ -54,7 +57,7 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 					{
 						//destroy and wall
 						nextRoom->Destroy();
-						Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+						doorObj->SetWall(true);
 					}
 					else
 					{
@@ -65,12 +68,12 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 				else
 				{
 					//create wall
-					Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+					doorObj->SetWall(true);
 				}
 			}
 			else
 			{
-				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(end_rooms[0], gate1->GetComponentLocation(), gate1->GetComponentRotation(), params);
+				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(end_rooms[0], doorObj->GetActorLocation(), doorObj->GetActorRotation(), params);
 				if(nextRoom)
 				{
 					//Generate Content
@@ -80,13 +83,13 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 					{
 						//destroy and wall
 						nextRoom->Destroy();
-						Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+						doorObj->SetWall(true);
 					}
 				}
 				else
 				{
 					//create wall
-					Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+					doorObj->SetWall(true);
 				}
 			}
 		}
