@@ -3,6 +3,8 @@
 
 #include "Door.h"
 
+#include "RoomBase.h"
+
 ADoor::ADoor()
 {
 	doorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("doorMesh"));
@@ -23,6 +25,13 @@ void ADoor::Interact()
 		int offset = isOpen ? -200 : 200;
 		doorMesh->MoveComponent(FVector(0,0,offset), doorMesh->GetComponentRotation(), false);
 		isOpen = !isOpen;
+	}
+	if(isOpen && isEntrance)
+	{
+		if(auto parentRoom = Cast<ARoomBase>(this->GetParentActor()))
+		{
+			parentRoom->EnableNPCs();
+		}
 	}
 }
 

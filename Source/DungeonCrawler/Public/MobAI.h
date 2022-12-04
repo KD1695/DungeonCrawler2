@@ -20,6 +20,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	UBlackboardComponent* GetBlackboard() const;
+	void SetDisabledState(bool _isDisabled);
 
 private:
 	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="AI", meta=(AllowPrivateAccess = "true"))
@@ -29,4 +30,7 @@ private:
 	UBehaviorTree* BehaviorTree;
 
 	UBlackboardComponent* Blackboard;
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="AI", meta=(AllowPrivateAccess = "true"))
+	bool IsDisabled;
 };

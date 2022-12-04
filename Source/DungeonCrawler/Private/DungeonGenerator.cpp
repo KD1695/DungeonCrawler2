@@ -94,10 +94,10 @@ void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 				}
 			}
 		}
-
 		else if(auto AICharacter = Cast<AMobCharacter>(childActors[i]))
 		{
 			AICharacter->SpawnDefaultController();
+			AICharacter->SetDisableState(true);
 		}
 	}
 

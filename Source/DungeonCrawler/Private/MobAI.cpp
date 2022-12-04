@@ -6,6 +6,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+const FName IS_DISABLED_BB_TAG = "IsDisabled";
+
 AMobAI::AMobAI()
 {
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> obj(TEXT("BehaviorTree'/Game/AI/BT_Mob.BT_Mob'"));
@@ -36,4 +38,10 @@ void AMobAI::OnPossess(APawn* InPawn)
 UBlackboardComponent* AMobAI::GetBlackboard() const
 {
 	return Blackboard;
+}
+
+void AMobAI::SetDisabledState(bool _isDisabled)
+{
+	IsDisabled = _isDisabled;
+	Blackboard->SetValueAsBool(IS_DISABLED_BB_TAG, IsDisabled);
 }
