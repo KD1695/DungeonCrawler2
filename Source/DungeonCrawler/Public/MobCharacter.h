@@ -17,8 +17,14 @@ class DUNGEONCRAWLER_API AMobCharacter : public ADungeonCrawlerCharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(AllowPrivateAccess = "true"))
 	bool IsDisabled = false;
 
+	class UAIPerceptionStimuliSourceComponent* Stimulus;
+	void SetupStimulus();
+	
 public:
+	AMobCharacter();
+	
 	UFUNCTION(BlueprintCallable)
 	void SetDisableState(bool _IsDisabled);
+	
 	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

@@ -5,8 +5,10 @@
 #include "MobCharacter.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/AIPerceptionComponent.h"
 
 const FName IS_DISABLED_BB_TAG = "IsDisabled";
+const FName IS_PLAYER_FOUND_BB_TAG = "IsPlayerFound";
 
 AMobAI::AMobAI()
 {
@@ -17,6 +19,7 @@ AMobAI::AMobAI()
 	}
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BTreeComp"));
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
+	SetupPerceptionSystem();
 }
 
 void AMobAI::BeginPlay()
@@ -44,4 +47,36 @@ void AMobAI::SetDisabledState(bool _isDisabled)
 {
 	IsDisabled = _isDisabled;
 	Blackboard->SetValueAsBool(IS_DISABLED_BB_TAG, IsDisabled);
+}
+
+void AMobAI::OnSenseUpdated(TArray<AActor*> const& Actors)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Inside Updated!!!!!!"));
+	UE_LOG(LogTemp, Warning, TEXT("Inside Updated!!!!!!!!!"));
+	for(int i=0; i<Actors.Num(); i++)
+	{
+		if(auto actor = Cast<ADungeonCrawlerCharacter>(Actors[i]))
+		{
+			if(actor->Controller->IsPlayerController())
+				GetBlackboard()->SetValueAsBool(IS_PLAYER_FOUND_BB_TAG, true);
+		}
+	}
+}
+
+void AMobAI::SetupPerceptionSystem()
+{
+	Config_Sight = CreateDefaultSubobject<UAISenseConfig_Sight>(TEXT("Sight Config"));
+	SetPerceptionComponent(*CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("Perception Component")));
+	Config_Sight->SightRadius = 400;
+	Config_Sight->LoseSightRadius = Config_Sight->SightRadius + 50;
+	Config_Sight->PeripheralVisionAngleDegrees = 90;
+	Config_Sight->SetMaxAge(5);
+	Config_Sight->AutoSuccessRangeFromLastSeenLocation = 600;
+	Config_Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Config_Sight->DetectionByAffiliation.bDetectFriendlies = true;
+	Config_Sight->DetectionByAffiliation.bDetectNeutrals = true;
+
+	GetPerceptionComponent()->SetDominantSense(*Config_Sight->GetSenseImplementation());
+	GetPerceptionComponent()->OnPerceptionUpdated.AddDynamic(this, &AMobAI::OnSenseUpdated);
+	GetPerceptionComponent()->ConfigureSense(*Config_Sight);
 }

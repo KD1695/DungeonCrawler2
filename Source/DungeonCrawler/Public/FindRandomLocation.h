@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable)
 class DUNGEONCRAWLER_API UFindRandomLocation : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
