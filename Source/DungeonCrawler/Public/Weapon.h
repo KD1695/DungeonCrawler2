@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/Actor.h"
+#include "GameFramework/PainCausingVolume.h"
 #include "Weapon.generated.h"
 
 UCLASS()
@@ -17,6 +18,8 @@ class DUNGEONCRAWLER_API AWeapon : public AActor
 
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess = "true"))
 	UBoxComponent* BoxComponent;
+
+	bool isAttacking = false;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -29,5 +32,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	void Init();
+	void SetIsAttacking(bool isAttacking);
 
 };

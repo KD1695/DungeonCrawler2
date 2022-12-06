@@ -25,10 +25,14 @@ void ADungeonCrawlerCharacter::SetWeaponClass(UClass* weaponClass)
 	Weapon = Cast<AWeapon>(WeaponChild->GetChildActor());
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("sword_r_socket"));
 	WeaponClass = weaponClass;
+	Weapon->Init();
 }
 
 ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 {
+	maxHealth = 100;
+	health = maxHealth;
+	attackDamage = 35;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -115,6 +119,20 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindTouch(IE_Released, this, &ADungeonCrawlerCharacter::TouchStopped);
 }
 
+void ADungeonCrawlerCharacter::AddEndNodeCollection()
+{
+	endNodeCollectionCount++;
+}
+
+void ADungeonCrawlerCharacter::UseEndNodeCollection()
+{
+	if(endNodeCollectionCount > 0)
+	{
+		endNodeCollectionCount--;
+		endNodeSubmitCount++;
+	}
+}
+
 void ADungeonCrawlerCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	Jump();
@@ -140,7 +158,11 @@ void ADungeonCrawlerCharacter::LookUpAtRate(float Rate)
 void ADungeonCrawlerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	SetWeaponClass(WeaponClass);
+	if(this->GetController())
+	{
+		if(this->GetController()->IsLocalPlayerController() && WeaponClass)
+			SetWeaponClass(WeaponClass);
+	}
 }
 
 void ADungeonCrawlerCharacter::Interact()
@@ -161,6 +183,8 @@ void ADungeonCrawlerCharacter::AttackStart()
 	{
 		isAttacking = true;
 		isReadyToAttack = false;
+		if(WeaponClass)
+			Weapon->SetIsAttacking(true);
 	}
 }
 
@@ -168,6 +192,8 @@ void ADungeonCrawlerCharacter::AttackStop()
 {
 	isAttacking = false;
 	isReadyToAttack = true;
+	if(WeaponClass)
+		Weapon->SetIsAttacking(false);
 }
 
 void ADungeonCrawlerCharacter::MoveForward(float Value)

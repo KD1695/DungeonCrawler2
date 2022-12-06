@@ -13,10 +13,7 @@ class DUNGEONCRAWLER_API ADungeonGenerator : public AActor
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category="Base Rooms", DisplayName="Single Out Rooms")
-	TArray<UClass*> single_out_rooms;
-	
-	UPROPERTY(EditAnywhere, Category="Base Rooms", DisplayName="Double Out Rooms")
-	TArray<UClass*> double_out_rooms;
+	TArray<UClass*> node_rooms;
 
 	UPROPERTY(EditAnywhere, Category="Base Rooms", DisplayName="End Rooms")
 	TArray<UClass*> end_rooms;
@@ -28,6 +25,9 @@ class DUNGEONCRAWLER_API ADungeonGenerator : public AActor
 	int roomLimiter;
 	int currentLimiterValue = 0;
 	TArray<ARoomBase*> roomsToGenerate;
+
+	UPROPERTY(EditAnywhere, Category="Room Content", DisplayName="AI Character Class")
+	UClass* MobAICharacterClass;
 	
 public:	
 	// Sets default values for this actor's properties

@@ -4,6 +4,7 @@
 #include "DungeonGenerator.h"
 
 #include "Door.h"
+#include "MobCharacter.h"
 #include "Algo/RandomShuffle.h"
 
 // Sets default values
@@ -31,64 +32,72 @@ void ADungeonGenerator::Tick(float DeltaTime)
 
 void ADungeonGenerator::GenerateDungeon(ARoomBase* startRoom)
 {
-	auto gateArray = startRoom->GetComponentsByClass(UChildActorComponent::StaticClass());
+	TArray<AActor*> childActors;
+	startRoom->GetAllChildActors(childActors, true);
 	auto params = FActorSpawnParameters();
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	for(int i=0; i<gateArray.Num(); i++)
+	for(int i=0; i<childActors.Num(); i++)
 	{
-		auto gate1 = Cast<UChildActorComponent>(gateArray[i]);
-		auto actorObj = Cast<ADoor>(gate1->GetChildActor());
-		if(!actorObj->isEntrance)
+		auto doorObj = Cast<ADoor>(childActors[i]);
+		if(doorObj)
 		{
-			if(currentLimiterValue < roomLimiter)
+			if(!doorObj->isEntrance)
 			{
-				Algo::RandomShuffle(single_out_rooms);
-				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(single_out_rooms[0], gate1->GetComponentLocation(), gate1->GetComponentRotation(), params);
-				if(nextRoom)
+				if(currentLimiterValue < roomLimiter)
 				{
-					//Generate Content
-					TArray<AActor*> overlaps;
-					Cast<UBoxComponent>(nextRoom->GetComponentByClass(UBoxComponent::StaticClass()))->GetOverlappingActors(overlaps, ARoomBase::StaticClass());
-					if(overlaps.Num()>1)
+					Algo::RandomShuffle(node_rooms);
+					auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(node_rooms[0], doorObj->GetActorLocation(), doorObj->GetActorRotation(), params);
+					if(nextRoom)
 					{
-						//destroy and wall
-						nextRoom->Destroy();
-						Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+						//Generate Content
+						TArray<AActor*> overlaps;
+						Cast<UBoxComponent>(nextRoom->GetComponentByClass(UBoxComponent::StaticClass()))->GetOverlappingActors(overlaps, ARoomBase::StaticClass());
+						if(overlaps.Num()>1)
+						{
+							//destroy and wall
+							nextRoom->Destroy();
+							doorObj->SetWall(true);
+						}
+						else
+						{
+							currentLimiterValue++;
+							roomsToGenerate.Add(nextRoom);
+						}
 					}
 					else
 					{
-						currentLimiterValue++;
-						roomsToGenerate.Add(nextRoom);
+						//create wall
+						doorObj->SetWall(true);
 					}
 				}
 				else
 				{
-					//create wall
-					Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
-				}
-			}
-			else
-			{
-				auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(end_rooms[0], gate1->GetComponentLocation(), gate1->GetComponentRotation(), params);
-				if(nextRoom)
-				{
-					//Generate Content
-					TArray<AActor*> overlaps;
-					Cast<UBoxComponent>(nextRoom->GetComponentByClass(UBoxComponent::StaticClass()))->GetOverlappingActors(overlaps, ARoomBase::StaticClass());
-					if(overlaps.Num()>1)
+					auto nextRoom = GetWorld()->SpawnActor<ARoomBase>(end_rooms[0], doorObj->GetActorLocation(), doorObj->GetActorRotation(), params);
+					if(nextRoom)
 					{
-						//destroy and wall
-						nextRoom->Destroy();
-						Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
+						//Generate Content
+						TArray<AActor*> overlaps;
+						Cast<UBoxComponent>(nextRoom->GetComponentByClass(UBoxComponent::StaticClass()))->GetOverlappingActors(overlaps, ARoomBase::StaticClass());
+						if(overlaps.Num()>1)
+						{
+							//destroy and wall
+							nextRoom->Destroy();
+							doorObj->SetWall(true);
+						}
+					}
+					else
+					{
+						//create wall
+						doorObj->SetWall(true);
 					}
 				}
-				else
-				{
-					//create wall
-					Cast<ADoor>(gate1->GetChildActor())->SetWall(true);
-				}
 			}
+		}
+		else if(auto AICharacter = Cast<AMobCharacter>(childActors[i]))
+		{
+			AICharacter->SpawnDefaultController();
+			AICharacter->SetDisableState(true);
 		}
 	}
 

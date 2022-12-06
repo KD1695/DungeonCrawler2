@@ -3,6 +3,8 @@
 
 #include "RoomBase.h"
 
+#include "MobCharacter.h"
+
 // Sets default values
 ARoomBase::ARoomBase()
 {
@@ -22,5 +24,18 @@ void ARoomBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ARoomBase::EnableNPCs()
+{
+	TArray<AActor*> childActors;
+	this->GetAllChildActors(childActors, true);
+	for(int i=0; i<childActors.Num(); i++)
+	{
+		if(auto MobCharacter = Cast<AMobCharacter>(childActors[i]))
+		{
+			MobCharacter->SetDisableState(false);
+		}
+	}
 }
 
