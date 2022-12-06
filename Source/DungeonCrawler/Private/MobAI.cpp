@@ -51,8 +51,6 @@ void AMobAI::SetDisabledState(bool _isDisabled)
 
 void AMobAI::OnSenseUpdated(TArray<AActor*> const& Actors)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, TEXT("Inside Updated!!!!!!"));
-	UE_LOG(LogTemp, Warning, TEXT("Inside Updated!!!!!!!!!"));
 	for(int i=0; i<Actors.Num(); i++)
 	{
 		if(auto actor = Cast<ADungeonCrawlerCharacter>(Actors[i]))

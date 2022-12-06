@@ -25,10 +25,14 @@ void ADungeonCrawlerCharacter::SetWeaponClass(UClass* weaponClass)
 	Weapon = Cast<AWeapon>(WeaponChild->GetChildActor());
 	Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("sword_r_socket"));
 	WeaponClass = weaponClass;
+	Weapon->Init();
 }
 
 ADungeonCrawlerCharacter::ADungeonCrawlerCharacter()
 {
+	maxHealth = 100;
+	health = maxHealth;
+	attackDamage = 35;
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
 
@@ -165,6 +169,8 @@ void ADungeonCrawlerCharacter::AttackStart()
 	{
 		isAttacking = true;
 		isReadyToAttack = false;
+		if(WeaponClass)
+			Weapon->SetIsAttacking(true);
 	}
 }
 
@@ -172,6 +178,8 @@ void ADungeonCrawlerCharacter::AttackStop()
 {
 	isAttacking = false;
 	isReadyToAttack = true;
+	if(WeaponClass)
+		Weapon->SetIsAttacking(false);
 }
 
 void ADungeonCrawlerCharacter::MoveForward(float Value)

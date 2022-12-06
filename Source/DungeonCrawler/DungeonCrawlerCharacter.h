@@ -43,6 +43,7 @@ class ADungeonCrawlerCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowPrivateAccess = "true"))
 	UClass* WeaponClass;
+
 public:
 	ADungeonCrawlerCharacter();
 	UClass* GetWeaponClass() const;
@@ -53,6 +54,11 @@ public:
 	float TurnRateGamepad;
 
 protected:
+	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowProtectedAccess = "true"))
+	float health;
+	
+	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowProtectedAccess = "true"))
+	float maxHealth;
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -76,8 +82,8 @@ protected:
 
 	void Interact();
 
-	void AttackStart();
-	void AttackStop();
+	virtual void AttackStart();
+	virtual void AttackStop();
 
 	/** Handler for when a touch input begins. */
 	void TouchStarted(ETouchIndex::Type FingerIndex, FVector Location);
@@ -85,7 +91,6 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
@@ -95,5 +100,8 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowProtectedAccess = "true"))
+    float attackDamage;
 };
 

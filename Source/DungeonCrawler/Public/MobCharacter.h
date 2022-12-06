@@ -19,12 +19,21 @@ class DUNGEONCRAWLER_API AMobCharacter : public ADungeonCrawlerCharacter
 
 	class UAIPerceptionStimuliSourceComponent* Stimulus;
 	void SetupStimulus();
+
+	UPROPERTY(EditAnywhere, Category="AI", meta=(AllowPrivateAccess = "true"))
+	float RespawnInterval = 5;
+	float CurrentTimeToRespawn = RespawnInterval;
 	
 public:
 	AMobCharacter();
 	
 	UFUNCTION(BlueprintCallable)
 	void SetDisableState(bool _IsDisabled);
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void AttackStart() override;
+	virtual void AttackStop() override;
 	
-	//virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	virtual float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };
