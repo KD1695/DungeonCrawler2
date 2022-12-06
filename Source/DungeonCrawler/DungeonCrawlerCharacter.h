@@ -44,6 +44,12 @@ class ADungeonCrawlerCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowPrivateAccess = "true"))
 	UClass* WeaponClass;
 
+	UPROPERTY(EditAnywhere, Category="Interaction", BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	int endNodeCollectionCount = 0;
+
+	UPROPERTY(EditAnywhere, Category="Interaction", BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	int endNodeSubmitCount = 0;
+
 public:
 	ADungeonCrawlerCharacter();
 	UClass* GetWeaponClass() const;
@@ -103,5 +109,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Attack", meta=(AllowProtectedAccess = "true"))
     float attackDamage;
+
+	void AddEndNodeCollection();
+	void UseEndNodeCollection();
 };
 

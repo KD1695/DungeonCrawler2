@@ -119,6 +119,20 @@ void ADungeonCrawlerCharacter::SetupPlayerInputComponent(class UInputComponent* 
 	PlayerInputComponent->BindTouch(IE_Released, this, &ADungeonCrawlerCharacter::TouchStopped);
 }
 
+void ADungeonCrawlerCharacter::AddEndNodeCollection()
+{
+	endNodeCollectionCount++;
+}
+
+void ADungeonCrawlerCharacter::UseEndNodeCollection()
+{
+	if(endNodeCollectionCount > 0)
+	{
+		endNodeCollectionCount--;
+		endNodeSubmitCount++;
+	}
+}
+
 void ADungeonCrawlerCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {
 	Jump();
